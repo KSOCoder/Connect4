@@ -109,8 +109,29 @@ column_is_full:
 ===================================================================
 ;
 check_win:
-; direction vectors(dRow,dCol):
-	; Horizontal(0,1)
-	; Vertical(1,0)
-	; DIAGONAL / (-1,1)
-	; DIAGONAL \ (1,1)
+; direction vectors(dRow, dCol) :
+	; Horizontal(0, 1)
+	; Vertical(1, 0)
+	; DIAGONAL / (-1, 1)
+	; DIAGONAL \ (1, 1)
+
+;
+===================================================================
+;
+count_direction:
+	PUSH     EBP
+	MOV      EBP,ESP
+	PUSH     ESI
+	PUSH     EBX
+
+	MOV      EAX,0
+	MOV      ESI,EDX
+	MOV      EBX,ECX
+
+	MOV      DWORD [EBP-4],0
+	MOV      DWORD [EBP-8],0
+	MOV      EAX,[EBP+8]
+	MOV      [EBP-4],EAX
+	MOV      EAX,[EBP+4]
+	MOV      [EBP-8],EAX
+	MOV      EAX,0
