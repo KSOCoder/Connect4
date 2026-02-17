@@ -6,11 +6,15 @@
 	COLS     EQU 7
 	ROWS     EQU 6
 	BOARD    RESB(ROWS * COLS)
+	MSG_TURN    DB  "Player %d's turn - choose column (1-7): ",0
+	MSG_FULL    DB  "Column full! Choose again.",0
+	MSG_WIN     DB  "Player %d WINS!",0
+	MSG_DRAW    DB  "DRAW!",0
 	MSG_BORDER  DB  "+---+---+---+---+---+---+---+",0
 	MSG_CELL_E  DB  " . ", 0
 	MSG_CELL_1  DB  " X ", 0
 	MSG_CELL_2  DB  " O ", 0
-	COL_NUMS    DB  " 1 2 3 4 5 6 7", 0
+	COL_NUMS    DB  " 1  2  3  4  5  6  7", 0
 
 ;
 ===================================================================
@@ -124,6 +128,7 @@ check_win:
 	ADD      EBX,EAX
 
 	CMP      EBX,4
+	JGE      win_found
 
 ; Vertical
 	MOV      EBX,1
@@ -139,6 +144,7 @@ check_win:
 	ADD      EBX,EAX
 
 	CMP      EBX,4
+	JGE      win_found
 
 ; Diagonal /
 	MOV      EBX,1
@@ -154,6 +160,7 @@ check_win:
 	ADD      EBX,EAX
 
 	CMP      EBX,4
+	JGE      win_found
 
 ; Diagonal \
 	MOV      EBX,1
@@ -169,6 +176,14 @@ check_win:
 	ADD      EBX,EAX
 
 	CMP      EBX,4
+	JGE      win_found
+
+	MOV      EAX,0
+	RET
+
+win_found:
+	MOV      EAX,1
+	RET
 
 ;
 ===================================================================
