@@ -1,11 +1,21 @@
 ; Connect4.asm - traditional game to get 4 in a row before your
 ; opponent
 
+.386
+.MODEL FLAT,C
+.STACK 4096
+
+COLS     EQU 7
+ROWS     EQU 6
+	EXTERN   printf:PROC
+	EXTERN   puts:PROC
+	EXTERN   putchar:PROC
+	EXTERN   ExitProcess:PROC
+	EXTERN   read_int:PROC
+	EXTERN   print_newline:PROC
+
 .data
 ; Board initialization; 42 bytes
-	COLS     EQU 7
-	ROWS     EQU 6
-	BOARD    RESB(ROWS * COLS)
 	MSG_TURN    DB  "Player %d's turn - choose column (1-7): ", 0
 	MSG_FULL    DB  "Column full! Choose again.", 0
 	MSG_WIN     DB  "Player %d WINS!", 0
@@ -16,16 +26,14 @@
 	MSG_CELL_2  DB  " O ", 0
 	COL_NUMS    DB  " 1  2  3  4  5  6  7", 0
 
-.bss
-	INPUT_COL   RESB 4
-	MOVE_COUNT  RESD 1
-
-.text
-	global _start
+.data?
+	BOARD       DB (ROWS* COLS) DUP(?)
+	INPUT_COL   DB 4 DUP(?)
+	MOVE_COUNT  DD ?
 ; ===================================================================
-_start:
+_start PROC
 	CALL     init_board
-	MOV      [MOVE_COUNT],DWORD 0
+	MOV      DWORD PTR [MOVE_COUNT],0
 	MOV      EDI,1
 
 game_loop:
@@ -56,7 +64,7 @@ get_column:
 	CMP      EAX,1
 	JE       player_wins
 
-	INC      DWORD [MOVE_COUNT]
+	INC      DWORD PTR [MOVE_COUNT]
 	MOV      EBX,[MOVE_COUNT]
 	CMP      EBX,(ROWS*COLS)
 	JE       game_draw
@@ -83,22 +91,24 @@ game_draw:
 	CALL     print_board
 	PUSH     OFFSET MSG_DRAW
 	CALL     puts
-	ADD      ESP, 4
+	ADD      ESP,4
 
 exit_game :
-	MOV      EAX, 1
-	XOR      EBX, EBX
-	INT      0x80
+	PUSH     0
+	CALL     ExitProcess
+_start ENDP
 
 ; ===================================================================
-init_board:
+init_board PROC
+	CLD
 	MOV      EDI, OFFSET BOARD
 	MOV      ECX, (ROWS* COLS)
 	XOR      EAX, EAX
 	REP      STOSB
 	RET
+init_board ENDP
 ; ===================================================================
-print_board:
+print_board PROC
 	PUSH     OFFSET COL_NUMS
 	CALL     puts
 	ADD      ESP,4
@@ -119,7 +129,7 @@ print_cell_loop:
 	MOV      EAX,EDX
 	IMUL     EAX,COLS
 	ADD      EAX,ECX
-	MOVZX    EBX,BYTE [BOARD + EAX]
+	MOVZX    EBX,BYTE PTR [BOARD + EAX]
 
 	PUSH     '|'
 	CALL     putchar
@@ -136,6 +146,7 @@ cell_is_1:
 	JMP      print_char
 cell_is_2 :
 	PUSH     OFFSET MSG_CELL_2
+	JMP      print_char
 print_char :
 	CALL     printf
 	ADD      ESP, 4
@@ -155,9 +166,10 @@ print_board_done:
 	CALL     puts
 	ADD      ESP,4
 	RET
+print_board ENDP
 ; ===================================================================
-drop_piece:
-	MOVZX    EDX,(ROWS-1)
+drop_piece PROC
+	MOV    EDX,(ROWS-1)
 
 find_empty_row:
 	CMP      EDX,-1
@@ -166,12 +178,12 @@ find_empty_row:
 	MOV      EAX,EDX
 	IMUL     EAX,COLS
 	ADD      EAX,ECX
-	MOVZX    EBX,BYTE [BOARD + EAX]
+	MOVZX    EBX,BYTE PTR [BOARD + EAX]
 	CMP      EBX,0
 	JNE      move_up
 	
 place_token:
-	MOV      BYTE [BOARD + EAX],DIL
+	MOV      BYTE PTR [BOARD + EAX],DIL
 	MOV      EAX,EDX
 	RET
 
@@ -182,6 +194,7 @@ move_up:
 column_is_full:
 	MOV      EAX,-1
 	RET
+drop_piece ENDP
 ; ===================================================================
 check_win:
 ; direction vectors(dRow,dCol):
@@ -214,7 +227,7 @@ check_win:
 	CALL     count_direction
 	ADD      EBX,EAX
 
-	PUSH     - 1
+	PUSH     -1
 	PUSH     0
 	CALL     count_direction
 	ADD      EBX,EAX
@@ -260,23 +273,22 @@ check_win:
 win_found:
 	MOV      EAX,1
 	RET
-
+check_win ENDP
 ; ===================================================================
-count_direction:
+count_direction PROC
 	PUSH     EBP
 	MOV      EBP,ESP
+	SUB      ESP,8
 	PUSH     ESI
 	PUSH     EBX
+	PUSH     ECX
 
-	MOV      EAX,0
 	MOV      ESI,EDX
 	MOV      EBX,ECX
 
-	MOV      DWORD [EBP-4],0
-	MOV      DWORD [EBP-8],0
-	MOV      EAX,[EBP+8]
+	MOV      EAX,[EBP+12]
 	MOV      [EBP-4],EAX
-	MOV      EAX,[EBP+4]
+	MOV      EAX,[EBP+8]
 	MOV      [EBP-8],EAX
 	MOV      EAX,0
 count_loop:
@@ -296,8 +308,7 @@ count_loop:
 	MOV      EAX,ESI
 	IMUL     EAX,COLS
 	ADD      EAX,EBX
-	MOVZX    EAX,BYTE [BOARD + EAX]
-	MOV      ECX,EAX
+	MOVZX    EAX,BYTE PTR [BOARD + EAX]
 	POP      EAX
 
 	CMP      ECX,EDI
@@ -305,10 +316,15 @@ count_loop:
 
 	INC      EAX
 	CMP      EAX,3
-	JL       count_broke
+	JL       count_loop
 
 count_broke:
+	LEA      ESP,[EBP-20]
+	POP      ECX
 	POP      EBX
 	POP      ESI
+	MOV      ESP,EBP
 	POP      EBP
 	RET      8
+count_direction ENDP
+END _start
