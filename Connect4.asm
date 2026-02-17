@@ -6,21 +6,23 @@
 	COLS     EQU 7
 	ROWS     EQU 6
 	BOARD    RESB(ROWS * COLS)
-	MSG_TURN    DB  "Player %d's turn - choose column (1-7): ",0
-	MSG_FULL    DB  "Column full! Choose again.",0
-	MSG_WIN     DB  "Player %d WINS!",0
-	MSG_DRAW    DB  "DRAW!",0
-	MSG_BORDER  DB  "+---+---+---+---+---+---+---+",0
+	MSG_TURN    DB  "Player %d's turn - choose column (1-7): ", 0
+	MSG_FULL    DB  "Column full! Choose again.", 0
+	MSG_WIN     DB  "Player %d WINS!", 0
+	MSG_DRAW    DB  "DRAW!", 0
+	MSG_BORDER  DB  "+---+---+---+---+---+---+---+", 0
 	MSG_CELL_E  DB  " . ", 0
 	MSG_CELL_1  DB  " X ", 0
 	MSG_CELL_2  DB  " O ", 0
 	COL_NUMS    DB  " 1  2  3  4  5  6  7", 0
 
+.bss
 	INPUT_COL   RESB 4
 	MOVE_COUNT  RESD 1
-;
-================================================================== =
-;
+
+.text
+	global _start
+; ===================================================================
 _start:
 	CALL     init_board
 	MOV      [MOVE_COUNT],DWORD 0
@@ -81,24 +83,21 @@ game_draw:
 	CALL     print_board
 	PUSH     OFFSET MSG_DRAW
 	CALL     puts
-	ADD      ESP,4
+	ADD      ESP, 4
 
-exit_game:
-	MOV      EAX,1
-	XOR      EBX,EBX
+exit_game :
+	MOV      EAX, 1
+	XOR      EBX, EBX
 	INT      0x80
-;
-===================================================================
-;
+
+; ===================================================================
 init_board:
 	MOV      EDI, OFFSET BOARD
 	MOV      ECX, (ROWS* COLS)
 	XOR      EAX, EAX
 	REP      STOSB
 	RET
-;
-===================================================================
-;
+; ===================================================================
 print_board:
 	PUSH     OFFSET COL_NUMS
 	CALL     puts
@@ -156,9 +155,7 @@ print_board_done:
 	CALL     puts
 	ADD      ESP,4
 	RET
-;
-===================================================================
-;
+; ===================================================================
 drop_piece:
 	MOV      EDX,(ROWS-1)
 
@@ -179,9 +176,7 @@ place_token:
 column_is_full:
 	MOV      EAX,-1
 	RET
-;
-===================================================================
-;
+; ===================================================================
 check_win:
 ; direction vectors(dRow,dCol):
 	; Horizontal(0,1)
@@ -255,9 +250,7 @@ win_found:
 	MOV      EAX,1
 	RET
 
-;
-===================================================================
-;
+; ===================================================================
 count_direction:
 	PUSH     EBP
 	MOV      EBP,ESP
