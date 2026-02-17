@@ -29,6 +29,7 @@ read_int PROC PUBLIC
 	CMP         EAX, 1
 	JE          ri_ok
 	MOV         DWORD PTR [INT_BUF],0
+ri_ok:
 	MOV         EAX,[INT_BUF]
 	RET
 read_int ENDP
