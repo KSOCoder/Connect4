@@ -109,11 +109,11 @@ column_is_full:
 ===================================================================
 ;
 check_win:
-; direction vectors(dRow, dCol) :
-	; Horizontal(0, 1)
-	; Vertical(1, 0)
-	; DIAGONAL / (-1, 1)
-	; DIAGONAL \ (1, 1)
+; direction vectors(dRow,dCol):
+	; Horizontal(0,1)
+	; Vertical(1,0)
+	; DIAGONAL / (-1,1)
+	; DIAGONAL \ (1,1)
 
 ; Horizontal
 	MOV      EBX,1
@@ -133,12 +133,43 @@ check_win:
 	CALL     count_direction
 	ADD      EBX,EAX
 
-	PUSH     -1
+	PUSH     - 1
 	PUSH     0
 	CALL     count_direction
-	ADD      EBX, EAX
+	ADD      EBX,EAX
 
 	CMP      EBX,4
+
+; Diagonal /
+	MOV      EBX,1
+
+	PUSH     -1
+	PUSH     1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	PUSH     1
+	PUSH     -1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	CMP      EBX,4
+
+; Diagonal \
+	MOV      EBX,1
+
+	PUSH     1
+	PUSH     1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	PUSH     -1
+	PUSH     -1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	CMP      EBX,4
+
 ;
 ===================================================================
 ;
