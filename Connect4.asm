@@ -157,7 +157,7 @@ print_board_done:
 	RET
 ; ===================================================================
 drop_piece:
-	MOV      EDX,(ROWS-1)
+	MOVZX    EDX,(ROWS-1)
 
 find_empty_row:
 	CMP      EDX,-1
@@ -167,11 +167,17 @@ find_empty_row:
 	IMUL     EAX,COLS
 	ADD      EAX,ECX
 	MOVZX    EBX,BYTE [BOARD + EAX]
+	CMP      EBX,0
+	JNE      move_up
 	
 place_token:
 	MOV      BYTE [BOARD + EAX],DIL
 	MOV      EAX,EDX
 	RET
+
+move_up:
+	DEC      EDX
+	JMP      find_empty_row
 
 column_is_full:
 	MOV      EAX,-1
@@ -189,6 +195,11 @@ check_win:
 
 	PUSH     0
 	PUSH     1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	PUSH     0
+	PUSH     -1
 	CALL     count_direction
 	ADD      EBX,EAX
 
