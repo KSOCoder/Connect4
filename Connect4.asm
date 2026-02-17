@@ -91,6 +91,11 @@ drop_piece:
 find_empty_row:
 	CMP      EDX,-1
 	JL       column_is_full
+
+	MOV      EAX,EDX
+	IMUL     EAX,COLS
+	ADD      EAX,ECX
+	MOVZX    EBX,BYTE [BOARD + EAX]
 	
 place_token:
 	MOV      BYTE [BOARD + EAX],DIL
@@ -100,3 +105,12 @@ place_token:
 column_is_full:
 	MOV      EAX,-1
 	RET
+;
+===================================================================
+;
+check_win:
+; direction vectors(dRow,dCol):
+	; Horizontal(0,1)
+	; Vertical(1,0)
+	; DIAGONAL / (-1,1)
+	; DIAGONAL \ (1,1)
