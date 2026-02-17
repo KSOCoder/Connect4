@@ -16,6 +16,22 @@
 	MSG_CELL_2  DB  " O ", 0
 	COL_NUMS    DB  " 1  2  3  4  5  6  7", 0
 
+	INPUT_COL   RESB 4
+	MOVE_COUNT  RESD 1
+;
+================================================================== =
+;
+_start:
+	CALL     init_board
+	MOV      [MOVE_COUNT],DWORD 0
+	MOV      EDI,1
+
+game_loop:
+	CALL     print_board
+	PUSH     EDI
+	PUSH     OFFSET MSG_TURN
+	CALL     printf
+	ADD      ESP,8
 ;
 ===================================================================
 ;
@@ -25,7 +41,6 @@ init_board:
 	XOR      EAX, EAX
 	REP      STOSB
 	RET
-
 ;
 ===================================================================
 ;
