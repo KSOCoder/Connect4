@@ -33,6 +33,27 @@ game_loop:
 	CALL     printf
 	ADD      ESP,8
 
+get_column:
+	CALL     read_int
+	DEC      EAX
+	MOV      ECX,EAX
+
+	CMP      ECX,0
+	JL       invalid_move
+	CMP      ECX,COLS
+	JGE      invalid_move
+
+	CALL     drop_piece
+
+	CMP      EAX,-1
+	JE       invalid_move
+
+invalid_move:
+	PUSH     OFFSET MSG_FULL
+	CALL     puts
+	ADD      ESP,4
+	JMP      get_column
+
 player_wins:
 	CALL     print_board
 	PUSH     EDI
