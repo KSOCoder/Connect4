@@ -135,3 +135,21 @@ count_direction:
 	MOV      EAX,[EBP+4]
 	MOV      [EBP-8],EAX
 	MOV      EAX,0
+count_loop:
+	ADD      ESI,[EBP-4]
+	ADD      EBX,[EBP-8]
+
+	CMP      ESI,0
+	JL       count_broke
+	CMP      ESI,ROWS
+	JGE      count_broke
+	CMP      EBX,0
+	JL       count_broke
+	CMP      EBX,COLS
+	JGE      count_broke
+
+count_broke:
+	POP      EBX
+	POP      ESI
+	POP      EBP
+	RET      8
