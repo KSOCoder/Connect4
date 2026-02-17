@@ -115,6 +115,30 @@ check_win:
 	; DIAGONAL / (-1, 1)
 	; DIAGONAL \ (1, 1)
 
+; Horizontal
+	MOV      EBX,1
+
+	PUSH     0
+	PUSH     1
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	CMP      EBX,4
+
+; Vertical
+	MOV      EBX,1
+
+	PUSH     1
+	PUSH     0
+	CALL     count_direction
+	ADD      EBX,EAX
+
+	PUSH     -1
+	PUSH     0
+	CALL     count_direction
+	ADD      EBX, EAX
+
+	CMP      EBX,4
 ;
 ===================================================================
 ;
