@@ -23,7 +23,7 @@ init_board:
 	RET
 
 ;
-================================================================== =
+===================================================================
 ;
 print_board:
 	PUSH     OFFSET COL_NUMS
@@ -81,4 +81,22 @@ print_board_done:
 	PUSH     OFFSET MSG_BORDER
 	CALL     puts
 	ADD      ESP,4
+	RET
+;
+===================================================================
+;
+drop_piece:
+	MOV      EDX,(ROWS-1)
+
+find_empty_row:
+	CMP      EDX,-1
+	JL       column_is_full
+	
+place_token:
+	MOV      BYTE [BOARD + EAX],DIL
+	MOV      EAX,EDX
+	RET
+
+column_is_full:
+	MOV      EAX,-1
 	RET
