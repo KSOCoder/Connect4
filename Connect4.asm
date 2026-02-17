@@ -31,6 +31,8 @@ ROWS     EQU 6
 	INPUT_COL   DB 4 DUP(?)
 	MOVE_COUNT  DD ?
 ; ===================================================================
+.code
+	ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:NOTHING,GS:NOTHING
 _start PROC
 	CALL     init_board
 	MOV      DWORD PTR [MOVE_COUNT],0
@@ -183,6 +185,8 @@ find_empty_row:
 	JNE      move_up
 	
 place_token:
+	MOV      EBX,EDI
+	AND      EBX,0FFh
 	MOV      BYTE PTR [BOARD + EAX],DIL
 	MOV      EAX,EDX
 	RET
@@ -196,7 +200,7 @@ column_is_full:
 	RET
 drop_piece ENDP
 ; ===================================================================
-check_win:
+check_win PROC
 ; direction vectors(dRow,dCol):
 	; Horizontal(0,1)
 	; Vertical(1,0)
