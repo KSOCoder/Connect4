@@ -19,3 +19,16 @@ EXTERN   printf : PROC
 ; ==============================================================
 .code
 ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:FLAT,GS:FLAT
+
+read_int PROC PUBLIC
+	PUSH        OFFSET INT_BUF
+	PUSH        OFFSET FMT_INT
+	CALL        scanf
+	ADD         ESP, 8
+
+	CMP         EAX, 1
+	JE          ri_ok
+	MOV         DWORD PTR [INT_BUF],0
+	MOV         EAX,[INT_BUF]
+	RET
+read_int ENDP
