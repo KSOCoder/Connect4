@@ -32,3 +32,12 @@ read_int PROC PUBLIC
 	MOV         EAX,[INT_BUF]
 	RET
 read_int ENDP
+
+print_newline PROC PUBLIC
+	PUSH        OFFSET FMT_NEWLINE
+	CALL        printf
+	ADD         ESP,4
+	RET
+print_newline ENDP
+
+END
