@@ -43,3 +43,22 @@ print_cell_loop:
 	CMP      ECX,COLS
 	JGE      print_row_end
 
+	MOV      EAX,EDX
+	IMUL     EAX,COLS
+	ADD      EAX,ECX
+	MOVZX    EBX,BYTE [BOARD + EAX]
+
+	PUSH     '|'
+	CALL     putchar
+	ADD      ESP,4
+cell_is_1:
+	PUSH     OFFSET MSG_CELL_1
+	JMP      print_char
+cell_is_2:
+	PUSH     OFFSET MSG_CELL_2
+print_char:
+	CALL     printf
+	ADD      ESP,4
+
+	INC      ECX
+	JMP      print_cell_loop
