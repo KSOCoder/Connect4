@@ -32,6 +32,25 @@ game_loop:
 	PUSH     OFFSET MSG_TURN
 	CALL     printf
 	ADD      ESP,8
+
+player_wins:
+	CALL     print_board
+	PUSH     EDI
+	PUSH     OFFSET MSG_WIN
+	CALL     printf
+	ADD      ESP,8
+	JMP      exit_game
+
+game_draw:
+	CALL     print_board
+	PUSH     OFFSET MSG_DRAW
+	CALL     puts
+	ADD      ESP,4
+
+exit_game:
+	MOV      EAX,1
+	XOR      EBX,EBX
+	INT      0x80
 ;
 ===================================================================
 ;
