@@ -148,6 +148,21 @@ count_loop:
 	CMP      EBX,COLS
 	JGE      count_broke
 
+	PUSH     EAX
+	MOV      EAX,ESI
+	IMUL     EAX,COLS
+	ADD      EAX,EBX
+	MOVZX    EAX,BYTE [BOARD + EAX]
+	MOV      ECX,EAX
+	POP      EAX
+
+	CMP      ECX,EDI
+	JNE      count_broke
+
+	INC      EAX
+	CMP      EAX,3
+	JL       count_broke
+
 count_broke:
 	POP      EBX
 	POP      ESI
