@@ -48,6 +48,21 @@ get_column:
 	CMP      EAX,-1
 	JE       invalid_move
 
+	MOV      EDX,EAX
+	CALL     check_win
+
+	CMP      EAX,1
+	JE       player_wins
+
+	INC      DWORD [MOVE_COUNT]
+	MOV      EBX,[MOVE_COUNT]
+	CMP      EBX,(ROWS*COLS)
+	JE       game_draw
+
+	XOR      EDI,3
+
+	JMP      game_loop
+
 invalid_move:
 	PUSH     OFFSET MSG_FULL
 	CALL     puts
